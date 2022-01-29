@@ -1,0 +1,10 @@
+
+infra/.DS_Store
+infra/.temp/*
+infra/.terraform/*
+
+api/.DS_Store
+infra/gif-judge.zip
+infra/.terraform.lock.hcl
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
