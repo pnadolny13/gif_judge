@@ -11,7 +11,7 @@ app.include_router(router, prefix="/v1")
 
 origins = [
     "http://localhost:3000",
-    "https://pnadolny13.github.io/gif-judge/"
+    "https://pnadolny13.github.io"
 ]
 
 app.add_middleware(
