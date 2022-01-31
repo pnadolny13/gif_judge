@@ -167,3 +167,45 @@ resource "aws_lambda_permission" "api_gw" {
 
   source_arn = "${aws_api_gateway_rest_api.api_lambda.execution_arn}/*/*"
 }
+
+resource "aws_dynamodb_table" "games" {
+  name           = "games"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+}
+
+resource "aws_dynamodb_table" "players" {
+  name           = "players"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+}
+
+resource "aws_dynamodb_table" "selections" {
+  name           = "selections"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+}
