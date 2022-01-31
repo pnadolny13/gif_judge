@@ -11,8 +11,8 @@ class DynamoDB:
 
     def _get_session(self):
         return boto3.Session(
-            aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-            aws_secret_access_key=os.environ["AWS_SAWS_SECRET_ACCESS_KEYECRET"],
+            aws_access_key_id=os.environ["AWS_ACCESS"],
+            aws_secret_access_key=os.environ["AWS_SECRET"],
             region_name="us-east-1"
         )
 
