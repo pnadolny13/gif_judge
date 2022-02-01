@@ -16,14 +16,14 @@ class Game(BaseModel):
 
 
 class Player(BaseModel):
-    id: UUID
-    game_id: UUID
+    id: str
+    game_id: str
     name: str
     game_score: Optional[int] = 0
 
 
 class Selection(BaseModel):
-    id: UUID
-    game_id: UUID
-    player_id: UUID
+    id: str
+    game_id: str
+    player_id: str
     url: str

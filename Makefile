@@ -12,4 +12,4 @@ terraform_down:
 	cd infra && terraform destroy
 
 api_local:
-	cd api/api/ && uvicorn main:app --reload
+	source .env && cd api/api/ && uvicorn main:app --reload

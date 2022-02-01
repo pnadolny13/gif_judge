@@ -11,10 +11,16 @@ class App extends React.Component {
     this.state = {
       searchTerm: "",
       gifs: [],
-      gameDetails: null,
-      gameName: null,
-      playerId: null
+      gameDetails: {
+        "id": ""
+      },
+      gameName: "",
+      playerDetails: {
+        "id": ""
+      },
+      playerName: ""
     }
+
   }
 
   changeSearchTerm = (event) => {
@@ -35,8 +41,14 @@ class App extends React.Component {
     } )
   }
 
+  changePlayerName= (event) => {
+    this.setState( {
+      playerName: event.target.value
+    } )
+  }
+
   getGifs = () => {
-    fetch("https://qrvdhn4u98.execute-api.us-east-1.amazonaws.com/test/v1/get_gifs", {
+    fetch("http://localhost:8000/v1/get_gifs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,49 +62,85 @@ class App extends React.Component {
       .then( resp => this.setState( { gifs: resp.data } ) )
   }
 
-  getNewGame = () => {
-    fetch("https://qrvdhn4u98.execute-api.us-east-1.amazonaws.com/test/v1/game/", {
+  getNewGame = async () => {
+    await fetch("http://localhost:8000/v1/game/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
       }, 
       body: JSON.stringify({
-        name: this.state.gameName,
-        creator_name: "testing"
+        name: this.state.gameName
       })
     })
       .then( resp => resp.json() )
       .then( resp => this.setState( { gameDetails: resp } ) )
+
+    fetch("http://localhost:8000/v1/game/" + this.state.gameDetails.id + "/player", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }, 
+        body: JSON.stringify({
+          name: this.state.playerName
+        })
+      })
+        .then( resp => resp.json() )
+        .then( resp => this.setState( { playerDetails: resp } ) )
   }
 
   render() {
-    return(
-      <div>
-        {
-          this.state.gameDetails ? null: <NewGameForm 
-            gameName={this.state.gameName}
-            changeGameName={this.changeGameName}
-            createGame={this.getNewGame}
-          />
-        }
+    if (this.state.gameDetails.id === "") {
+      return(
+        <div>
+          {
+            <NewGameForm
+              gameName={this.state.gameName}
+              playerName={this.state.playerName}
+              changePlayerName={this.changePlayerName}
+              changeGameName={this.changeGameName}
+              createGame={this.getNewGame}
+            />
+          }
 
-        {
-          this.state.gameDetails ? <SearchBar 
-            searchTerm={this.state.searchTerm}
-            changeSearchTerm={this.changeSearchTerm}
-            getGifs={this.getGifs}
-          /> : null
-        }
+        </div>
+      )
+      
+    } else if (this.state.playerDetails.id === "") {
+      return (
+        <div>
+          {
+            <SearchBar 
+              searchTerm={this.state.searchTerm}
+              changeSearchTerm={this.changeSearchTerm}
+              getGifs={this.getGifs}
+            />
+          }
+        </div>
+      )
+    } else {
 
-        {
-          this.state.gifs.map( gifObj => 
-            <GifCard key={gifObj.id} gifObj={gifObj} /> 
-          )
-        }
+      return (
+        <div>
+          {
+            <SearchBar 
+              searchTerm={this.state.searchTerm}
+              changeSearchTerm={this.changeSearchTerm}
+              getGifs={this.getGifs}
+            />
+          }
 
-      </div>
-    )
+          {
+            this.state.gifs.map( gifObj => 
+              <GifCard key={gifObj.id} gifObj={gifObj} /> 
+            )
+          }
+
+        </div>
+      )
+
+    }
   }  
 }
 
