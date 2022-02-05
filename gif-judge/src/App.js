@@ -63,7 +63,7 @@ class App extends React.Component {
   }
 
   getNewGame = async () => {
-    await fetch("http://localhost:8000/v1/game/", {
+    await fetch("https://fzfht8r5ui.execute-api.us-east-1.amazonaws.com/test/v1/game/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
