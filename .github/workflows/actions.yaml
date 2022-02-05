@@ -30,6 +30,11 @@ jobs:
         TF_VAR_giphy_api_key:  ${{ secrets.GIPHY_API_KEY }}
         TF_VAR_aws_region:  us-east-1
 
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
     - name: Build API
       run: make build
 
