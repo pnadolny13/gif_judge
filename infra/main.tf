@@ -65,6 +65,13 @@ resource "aws_lambda_function" "lambda_singer_metadata" {
 
   role = aws_iam_role.lambda_exec.arn
 
+  environment {
+    variables = {
+      AWS_ACCESS = var.aws_access_key,
+      AWS_SECRET = var.aws_secret,
+      GIPHY_API_KEY = var.giphy_api_key
+    }
+  }
 }
 
 resource "aws_cloudwatch_log_group" "singer_metadata" {
