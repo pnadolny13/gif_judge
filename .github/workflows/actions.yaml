@@ -31,7 +31,7 @@ jobs:
         TF_VAR_aws_region:  us-east-1
 
     - name: Build API
-      run: make build
+      run: ls
 
     - name: Terraform Validate
       run: cd infra && terraform init
