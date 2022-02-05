@@ -41,7 +41,7 @@ jobs:
         time: '5s'
 
     - name: Build API
-      run: make build
+      run: python3 -m venv venv && source venv/bin/activate
 
     - name: Terraform Validate
       run: cd infra && terraform init
