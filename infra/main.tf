@@ -14,6 +14,14 @@ terraform {
     }
   }
 
+  backend "s3" {
+      bucket  = "gif-terraform-state-backend"
+      encrypt = true
+      key     = "gif_judge/terraform.tfstate"
+      region  = "us-east-1"
+      dynamodb_table = "gif-terraform-state-state-lock"
+  }
+
   required_version = "~> 1.0"
 }
 
@@ -22,7 +30,7 @@ provider "aws" {
 }
 
 resource "random_pet" "lambda_bucket_name" {
-  prefix = "learn-terraform-functions"
+  prefix = "gif"
   length = 4
 }
 
@@ -34,7 +42,7 @@ resource "aws_s3_bucket" "lambda_bucket" {
 }
 
 
-data "archive_file" "lambda_singer_metadata" {
+data "archive_file" "lambda_gif_judge" {
   type = "zip"
 
   source_dir  = "${path.module}/.temp"
@@ -42,26 +50,26 @@ data "archive_file" "lambda_singer_metadata" {
 
 }
 
-resource "aws_s3_bucket_object" "lambda_singer_metadata" {
+resource "aws_s3_bucket_object" "lambda_gif_judge" {
   bucket = aws_s3_bucket.lambda_bucket.id
 
   key    = "gif-judge.zip"
-  source = data.archive_file.lambda_singer_metadata.output_path
+  source = data.archive_file.lambda_gif_judge.output_path
 
-  etag = filemd5(data.archive_file.lambda_singer_metadata.output_path)
+  etag = filemd5(data.archive_file.lambda_gif_judge.output_path)
 
 }
 
-resource "aws_lambda_function" "lambda_singer_metadata" {
+resource "aws_lambda_function" "lambda_gif_judge" {
   function_name = "GifJudge"
 
   s3_bucket = aws_s3_bucket.lambda_bucket.id
-  s3_key    = aws_s3_bucket_object.lambda_singer_metadata.key
+  s3_key    = aws_s3_bucket_object.lambda_gif_judge.key
 
   runtime = "python3.8"
   handler = "main.handler"
 
-  source_code_hash = data.archive_file.lambda_singer_metadata.output_base64sha256
+  source_code_hash = data.archive_file.lambda_gif_judge.output_base64sha256
 
   role = aws_iam_role.lambda_exec.arn
 
@@ -74,8 +82,8 @@ resource "aws_lambda_function" "lambda_singer_metadata" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "singer_metadata" {
-  name = "/aws/lambda/${aws_lambda_function.lambda_singer_metadata.function_name}"
+resource "aws_cloudwatch_log_group" "gif_judge" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge.function_name}"
 
   retention_in_days = 30
 }
@@ -126,7 +134,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
-   uri                     = aws_lambda_function.lambda_singer_metadata.invoke_arn
+   uri                     = aws_lambda_function.lambda_gif_judge.invoke_arn
 }
 
 
@@ -146,7 +154,7 @@ resource "aws_api_gateway_integration" "lambda_root" {
 
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
-   uri                     = aws_lambda_function.lambda_singer_metadata.invoke_arn
+   uri                     = aws_lambda_function.lambda_gif_judge.invoke_arn
 }
 
 
@@ -169,7 +177,7 @@ resource "aws_cloudwatch_log_group" "api_gw" {
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_singer_metadata.function_name
+  function_name = aws_lambda_function.lambda_gif_judge.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.api_lambda.execution_arn}/*/*"

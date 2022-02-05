@@ -9,5 +9,5 @@ output "lambda_bucket_name" {
 output "function_name" {
   description = "Name of the Lambda function."
 
-  value = aws_lambda_function.lambda_singer_metadata.function_name
+  value = aws_lambda_function.lambda_gif_judge.function_name
 }
