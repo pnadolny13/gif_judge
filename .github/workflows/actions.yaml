@@ -12,10 +12,10 @@ jobs:
     steps:
 
     - name: Checkout Repo
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.4.0
 
     - name: Terraform Init
-      uses: hashicorp/terraform-github-actions/init@v0.4.0
+      uses: hashicorp/terraform-github-actions/init@v0.8.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'infra'
@@ -31,10 +31,10 @@ jobs:
       run: make build
 
     - name: Terraform Validate
-      uses: hashicorp/terraform-github-actions/validate@v0.3.7
+      uses: hashicorp/terraform-github-actions/validate@v0.8.0
 
     - name: Terraform Apply
-      uses: hashicorp/terraform-github-actions/apply@v0.4.0
+      uses: hashicorp/terraform-github-actions/apply@v0.8.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'infra'
