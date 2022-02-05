@@ -84,7 +84,7 @@ jobs:
     name: Deploy React App
     needs: build_gh_pages
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     
     steps:
     - name: Download artifact
