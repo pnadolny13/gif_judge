@@ -59,7 +59,7 @@ jobs:
         TF_VAR_aws_region:  us-east-1
 
   deploy_gh_pages:
-    name: Deploy React App
+    name: Build React App
     runs-on: ubuntu-latest
     steps:
 
@@ -73,6 +73,25 @@ jobs:
     - run: cd gif-judge && npm install
 
     - run: cd gif-judge && npm run build
+
+    - name: Upload production-ready build files
+      uses: actions/upload-artifact@v2
+      with:
+        name: production-files
+        path: ./build
+
+  deploy:
+    name: Deploy React App
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: production-files
+        path: ./build
 
     - name: Deploy to gh-pages
       uses: peaceiris/actions-gh-pages@v3
