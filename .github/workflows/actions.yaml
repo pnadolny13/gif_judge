@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: hashicorp/setup-terraform@v1
-    - run: terraform_up
+    - run: make terraform_up
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
