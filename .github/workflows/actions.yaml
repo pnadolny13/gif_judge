@@ -70,6 +70,12 @@ jobs:
       with:
         node-version: '14'
 
-    - run: cd gif-judge && git config --global user.name 'pnadolny13' && git config --global user.email 'patnadolny@gmail.com' && npm install
+    - run: cd gif-judge && npm install
 
-    - run: cd gif-judge &&  git config --global user.name 'pnadolny13' && git config --global user.email 'patnadolny@gmail.com' && git config -l && npm run deploy
+    - run: cd gif-judge && npm run build
+
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./gif-judge/build
