@@ -58,7 +58,7 @@ jobs:
         TF_VAR_giphy_api_key:  ${{ secrets.GIPHY_API_KEY }}
         TF_VAR_aws_region:  us-east-1
 
-  deploy_gh_pages:
+  build_gh_pages:
     name: Build React App
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +82,7 @@ jobs:
 
   deploy:
     name: Deploy React App
-    needs: build
+    needs: build_gh_pages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
