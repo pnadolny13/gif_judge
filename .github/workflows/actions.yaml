@@ -35,13 +35,8 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Sleep for 30 seconds
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '5s'
-
     - name: Build API
-      run: python3 -m venv venv && source venv/bin/activate
+      run: python3 -m venv venv && source venv/bin/activate && pip install -r api/requirements.txt
 
     - name: Terraform Validate
       run: cd infra && terraform init
