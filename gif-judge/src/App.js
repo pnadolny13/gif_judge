@@ -48,7 +48,7 @@ class App extends React.Component {
   }
 
   getGifs = () => {
-    fetch("http://localhost:8000/v1/get_gifs", {
+    fetch("https://fzfht8r5ui.execute-api.us-east-1.amazonaws.com/test/v1/get_gifs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
