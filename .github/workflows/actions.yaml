@@ -66,6 +66,6 @@ jobs:
       with:
         node-version: '14'
 
-    - run: cd gif-judge && npm install
+    - run: cd gif-judge && git config user.name "pnadolny13" && git config user.email "patnadolny@gmail.com" && npm install
 
     - run: cd gif-judge && npm run deploy
