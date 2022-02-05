@@ -72,4 +72,4 @@ jobs:
 
     - run: cd gif-judge && git config user.name 'pnadolny13' && git config user.email 'patnadolny@gmail.com' && npm install
 
-    - run: cd gif-judge && npm run deploy
+    - run: cd gif-judge &&  git config user.name 'pnadolny13' && git config user.email 'patnadolny@gmail.com' && npm run deploy
