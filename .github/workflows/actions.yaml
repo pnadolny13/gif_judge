@@ -38,10 +38,10 @@ jobs:
     - name: Sleep for 30 seconds
       uses: jakejarvis/wait-action@master
       with:
-        time: '15s'
+        time: '5s'
 
     - name: Build API
-      run: python --version
+      run: make build
 
     - name: Terraform Validate
       run: cd infra && terraform init
