@@ -73,6 +73,8 @@ jobs:
     - run: cd gif-judge && npm install
 
     - run: cd gif-judge && npm run build
+      env:
+        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
     - name: Upload production-ready build files
       uses: actions/upload-artifact@v2
