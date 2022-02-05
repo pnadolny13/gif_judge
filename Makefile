@@ -4,6 +4,9 @@ app_local:
 app_deploy:
 	cd gif-judge && npm run deploy
 
+terraform_init:
+	source .env && cd infra && terraform init
+
 terraform_up:
 	cd api && python3 -m venv venv && source venv/bin/activate && pip install -r api/requirements.txt && cp -r ./venv/lib/python3.9/site-packages/ ../infra/.temp && cp -r api/* ../infra/.temp
 	source .env && cd infra && terraform apply -auto-approve
