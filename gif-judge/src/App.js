@@ -48,7 +48,7 @@ class App extends React.Component {
   }
 
   getGifs = () => {
-    fetch("https://fzfht8r5ui.execute-api.us-east-1.amazonaws.com/test/v1/get_gifs", {
+    fetch(process.env.REACT_APP_API_URL + "v1/get_gifs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ class App extends React.Component {
   }
 
   getNewGame = async () => {
-    await fetch("https://fzfht8r5ui.execute-api.us-east-1.amazonaws.com/test/v1/game/", {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ class App extends React.Component {
       .then( resp => resp.json() )
       .then( resp => this.setState( { gameDetails: resp } ) )
 
-    fetch("http://localhost:8000/v1/game/" + this.state.gameDetails.id + "/player", {
+    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/player", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
