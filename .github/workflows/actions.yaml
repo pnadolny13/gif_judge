@@ -30,10 +30,10 @@ jobs:
         TF_VAR_giphy_api_key:  ${{ secrets.GIPHY_API_KEY }}
         TF_VAR_aws_region:  us-east-1
 
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
 
     - name: Build API
       run: cd api && python3 -m venv venv && source venv/bin/activate && pip install -r api/requirements.txt && cp -r ./venv/lib/python3.9/site-packages/ ../infra/.temp && cp -r api/* ../infra/.temp
