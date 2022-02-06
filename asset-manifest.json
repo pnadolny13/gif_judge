@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/gif-judge/static/css/main.073c9b0a.css",
-    "main.js": "/gif-judge/static/js/main.473a6b36.js",
+    "main.js": "/gif-judge/static/js/main.e9e35848.js",
     "static/js/787.f777235f.chunk.js": "/gif-judge/static/js/787.f777235f.chunk.js",
     "index.html": "/gif-judge/index.html",
     "main.073c9b0a.css.map": "/gif-judge/static/css/main.073c9b0a.css.map",
-    "main.473a6b36.js.map": "/gif-judge/static/js/main.473a6b36.js.map",
+    "main.e9e35848.js.map": "/gif-judge/static/js/main.e9e35848.js.map",
     "787.f777235f.chunk.js.map": "/gif-judge/static/js/787.f777235f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.473a6b36.js"
+    "static/js/main.e9e35848.js"
   ]
 }
