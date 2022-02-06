@@ -1,6 +1,6 @@
 import React from 'react'
 
-const NewGameForm = ( { gameId, changeGameId, getExistingGame } ) => {
+const ExistingGameForm = ( { gameId, changeGameId, getExistingGame } ) => {
   return (
     <div>
       <input
@@ -19,4 +19,4 @@ const NewGameForm = ( { gameId, changeGameId, getExistingGame } ) => {
   )
 }
 
-export default NewGameForm
+export default ExistingGameForm
