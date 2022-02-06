@@ -122,7 +122,7 @@ class App extends React.Component {
   }
 
   getGamePlayers = async () => {
-    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameId + "/players", {
+    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/players", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
