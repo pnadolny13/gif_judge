@@ -167,9 +167,14 @@ class App extends React.Component {
       
       return(
         <div>
-        {this.state.gamePlayers.map(function(d, idx){
-          return (<li key={idx}>{d.name} - {d.game_score}</li>)
-        })}
+          {
+            <h6>Game URL: https://pnadolny13.github.io/gif-judge?id={this.state.gameDetails.id}</h6>
+          }
+          {
+            this.state.gamePlayers.map(function(d, idx){
+              return (<li key={idx}>{d.name} - {d.game_score}</li>)
+            })
+          }
         </div>
       )
     

@@ -7,6 +7,8 @@ const GameID = () => {
     console.log(searchParams.entries());
     if (searchParams.get("id")) {
         return <div>Your Game ID - {searchParams.get("id")}</div>;
+    } else {
+        return <div></div>;
     }
     
 };

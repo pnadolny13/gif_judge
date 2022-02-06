@@ -7,7 +7,6 @@ import {
     BrowserRouter as Router,
     Routes,
     Route,
-    Navigate,
   } from 'react-router-dom';
 
 const GameLanding = (
@@ -37,8 +36,7 @@ const GameLanding = (
             {
               <Router>
                 <Routes>
-                  <Route path="/gif-judge/games/" element={<GameID />} />
-                  <Route path="" element={<Navigate to="//gif-judge/" />} />
+                  <Route path="/gif-judge/" element={<GameID />} />
                 </Routes>
               </Router>
             }
