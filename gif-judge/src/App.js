@@ -101,11 +101,11 @@ class App extends React.Component {
       .then( resp => resp.json() )
       .then( resp => this.setState( { gameDetails: resp } ) )
 
-    this.createPlayer()
+    await this.createPlayer()
   }
 
   createPlayer = async () => {
-    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/player", {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/player", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +118,7 @@ class App extends React.Component {
       .then( resp => resp.json() )
       .then( resp => this.setState( { playerDetails: resp } ) )
     
-    this.getGamePlayers()
+    await this.getGamePlayers()
   }
 
   getGamePlayers = async () => {
