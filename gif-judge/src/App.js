@@ -3,6 +3,7 @@ import './App.css';
 import SearchBar from './SearchBar';
 import GifCard from './GifCard';
 import GameLanding from './GameLanding';
+import PlayerSignupForm from './PlayerSignupForm';
 
 
 class App extends React.Component {
@@ -21,7 +22,9 @@ class App extends React.Component {
         "id": ""
       },
       playerName: "",
-      newGameFlag: ""
+      newGameFlag: "",
+      roundStarted: false,
+      gamePlayers: []
     }
   }
 
@@ -98,18 +101,38 @@ class App extends React.Component {
       .then( resp => resp.json() )
       .then( resp => this.setState( { gameDetails: resp } ) )
 
+    this.createPlayer()
+  }
+
+  createPlayer = async () => {
     fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/player", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        }, 
-        body: JSON.stringify({
-          name: this.state.playerName
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+      body: JSON.stringify({
+        name: this.state.playerName
       })
-        .then( resp => resp.json() )
-        .then( resp => this.setState( { playerDetails: resp } ) )
+    })
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { playerDetails: resp } ) )
+    
+    this.getGamePlayers()
+  }
+
+  getGamePlayers = async () => {
+    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameId + "/players", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+    })
+      // TODO: error handling
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { gamePlayers: resp } ) )
+
   }
 
   render() {
@@ -132,15 +155,25 @@ class App extends React.Component {
       return (
         <div>
           {
-            <SearchBar 
-              searchTerm={this.state.searchTerm}
-              changeSearchTerm={this.changeSearchTerm}
-              getGifs={this.getGifs}
+            <PlayerSignupForm
+              playerName={this.state.playerName}
+              changePlayerName={this.changePlayerName}
+              createPlayer={this.createPlayer}
             />
           }
         </div>
       )
-    } else {
+    } else if (this.state.roundStarted === false) {
+      
+      return(
+        <div>
+        {this.state.gamePlayers.map(function(d, idx){
+          return (<li key={idx}>{d.name}</li>)
+        })}
+        </div>
+      )
+    
+    }  else {
 
       return (
         <div>

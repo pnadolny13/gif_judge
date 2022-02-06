@@ -1,6 +1,7 @@
 import os
 
 import boto3
+import botocore
 from boto3.dynamodb.conditions import Key
 
 
@@ -26,11 +27,23 @@ class DynamoDB:
         if 'Item' in resp:
             return resp['Item']
 
-    def get_items(self, table_name: str, filter: dict):
-        table = self.dynamodb.Table(table_name)      
-        resp = table.get_item(Key=filter)
-        if 'Item' in resp:
-            return resp['Item']
+    def get_items(self, table_name: str, scan_kwargs: dict):
+        table = self.dynamodb.Table(table_name)   
+        resp = table.scan(**scan_kwargs)
+        complete = False
+        records = []
+        while not complete:
+            try:
+                response = table.scan(**scan_kwargs)
+            except botocore.exceptions.ClientError as error:
+                raise Exception('Error quering DB: {}'.format(error))
+
+            records.extend(response.get('Items', []))
+            next_key = response.get('LastEvaluatedKey')
+            scan_kwargs['ExclusiveStartKey'] = next_key
+
+            complete = True if next_key is None else False
+        return records
 
     def update_item(self, table_name: str, key: dict, expression: str, attrb_vals: dict):
         table = self.dynamodb.Table(table_name)      
