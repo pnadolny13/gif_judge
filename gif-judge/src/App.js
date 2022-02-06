@@ -3,7 +3,8 @@ import './App.css';
 import SearchBar from './SearchBar';
 import GifCard from './GifCard';
 import NewGameForm from './NewGameForm';
-import GameId from './GameId';
+import ExistingGameForm from './ExistingGameForm';
+import GameLanding from './GameLanding';
 import {
   BrowserRouter as Router,
   Routes,
@@ -23,6 +24,7 @@ class App extends React.Component {
         "id": ""
       },
       gameName: "",
+      gameId: "",
       playerDetails: {
         "id": ""
       },
@@ -69,6 +71,22 @@ class App extends React.Component {
       .then( resp => this.setState( { gifs: resp.data } ) )
   }
 
+  getExistingGame = async () => {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+      body: JSON.stringify({
+        name: this.state.gameName
+      })
+    })
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { gameDetails: resp } ) )
+
+  }
+
   getNewGame = async () => {
     await fetch(process.env.REACT_APP_API_URL + "v1/game/", {
       method: "POST",
@@ -106,10 +124,13 @@ class App extends React.Component {
           {
             <Router>
               <Routes>
-                <Route path="/gif-judge/games/" element={<GameId />} />
+                <Route path="/gif-judge/games/" element={<GameLanding />} />
                 <Route path="" element={<Navigate to="/" />} />
               </Routes>
             </Router>
+          }
+          {
+            ExistingGameForm(this.state.gameId, this.changeGameId, this.getExistingGame)
           }
           {
             <NewGameForm
@@ -120,7 +141,6 @@ class App extends React.Component {
               createGame={this.getNewGame}
             />
           }
-
         </div>
       )
       
