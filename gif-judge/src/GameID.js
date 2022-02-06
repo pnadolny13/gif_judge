@@ -2,10 +2,12 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-const GameId = ({ match, location }) => {
+const GameID = () => {
     const [searchParams] = useSearchParams();
     console.log(searchParams.entries());
-  
-    return <div>Your Game ID - {searchParams.get("id")}</div>;
+    if (searchParams.get("id")) {
+        return <div>Your Game ID - {searchParams.get("id")}</div>;
+    }
+    
 };
-export default GameId
+export default GameID

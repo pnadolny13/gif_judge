@@ -1,15 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import SearchBar from './SearchBar';
 import GifCard from './GifCard';
-import NewGameForm from './NewGameForm';
-import GameId from './GameId';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
+import GameLanding from './GameLanding';
 
 
 class App extends React.Component {
@@ -23,10 +16,12 @@ class App extends React.Component {
         "id": ""
       },
       gameName: "",
+      gameId: "",
       playerDetails: {
         "id": ""
       },
-      playerName: ""
+      playerName: "",
+      newGameFlag: ""
     }
   }
 
@@ -54,6 +49,12 @@ class App extends React.Component {
     } )
   }
 
+  changeNewGameFlag= (event) => {
+    this.setState( {
+      newGameFlag: event.target.value
+    } )
+  }
+  
   getGifs = () => {
     fetch(process.env.REACT_APP_API_URL + "v1/get_gifs", {
       method: "POST",
@@ -67,6 +68,20 @@ class App extends React.Component {
     })
       .then( resp => resp.json() )
       .then( resp => this.setState( { gifs: resp.data } ) )
+  }
+
+  getExistingGame = async () => {
+    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameId, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+    })
+      // TODO: error handling
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { gameDetails: resp } ) )
+
   }
 
   getNewGame = async () => {
@@ -101,29 +116,18 @@ class App extends React.Component {
 
     
     if (this.state.gameDetails.id === "") {
-      return(
-        <div>
-          {
-            <Router>
-              <Routes>
-                <Route path="/gif-judge/games/" element={<GameId />} />
-                <Route path="" element={<Navigate to="/" />} />
-              </Routes>
-            </Router>
-          }
-          {
-            <NewGameForm
-              gameName={this.state.gameName}
-              playerName={this.state.playerName}
-              changePlayerName={this.changePlayerName}
-              changeGameName={this.changeGameName}
-              createGame={this.getNewGame}
-            />
-          }
-
-        </div>
-      )
-      
+      return GameLanding(
+              this.state.newGameFlag,
+              this.state.gameId,
+              this.state.gameName,
+              this.state.playerName,
+              this.changePlayerName,
+              this.changeGameName,
+              this.changeGameId,
+              this.changeNewGameFlag,
+              this.getNewGame,
+              this.getExistingGame
+            )
     } else if (this.state.playerDetails.id === "") {
       return (
         <div>
