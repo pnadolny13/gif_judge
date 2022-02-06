@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import SearchBar from './SearchBar';
 import GifCard from './GifCard';
 import NewGameForm from './NewGameForm';
+import GameId from './GameId';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
+
 
 class App extends React.Component {
 
@@ -20,7 +28,6 @@ class App extends React.Component {
       },
       playerName: ""
     }
-
   }
 
   changeSearchTerm = (event) => {
@@ -91,9 +98,19 @@ class App extends React.Component {
   }
 
   render() {
+
+    
     if (this.state.gameDetails.id === "") {
       return(
         <div>
+          {
+            <Router>
+              <Routes>
+                <Route path="/gif-judge/games/" element={<GameId />} />
+                <Route path="" element={<Navigate to="/" />} />
+              </Routes>
+            </Router>
+          }
           {
             <NewGameForm
               gameName={this.state.gameName}
