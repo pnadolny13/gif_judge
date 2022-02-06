@@ -168,7 +168,7 @@ class App extends React.Component {
       return(
         <div>
         {this.state.gamePlayers.map(function(d, idx){
-          return (<li key={idx}>{d.name}</li>)
+          return (<li key={idx}>{d.name} - {d.game_score}</li>)
         })}
         </div>
       )
