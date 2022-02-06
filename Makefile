@@ -1,9 +1,3 @@
-app_local:
-	cd gif-judge && npm start
-
-app_deploy:
-	cd gif-judge && npm run deploy
-
 terraform_init:
 	source .env && cd infra && terraform init
 
@@ -16,3 +10,6 @@ terraform_down:
 
 api_local:
 	source .env && cd api/api/ && uvicorn main:app --reload
+
+app_local:
+	source .env && cd gif-judge && npm start
