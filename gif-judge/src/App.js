@@ -4,7 +4,20 @@ import SearchBar from './SearchBar';
 import GifCard from './GifCard';
 import GameLanding from './GameLanding';
 import PlayerSignupForm from './PlayerSignupForm';
+import JudgeForm from './JudgeForm';
 
+
+function getJudgeDetails(gamePlayers, gameDetails) {
+  // for each if ID = 
+  var judge_player = {}
+  for (const player of gamePlayers){
+    if (player.id === gameDetails.judge_player_id){
+      judge_player = player
+      break;
+    }
+  }
+  return judge_player
+}
 
 class App extends React.Component {
 
@@ -24,7 +37,8 @@ class App extends React.Component {
       playerName: "",
       newGameFlag: "",
       roundStarted: false,
-      gamePlayers: []
+      gamePlayers: [],
+      phraseFormEntry: ""
     }
   }
 
@@ -49,6 +63,12 @@ class App extends React.Component {
   changePlayerName= (event) => {
     this.setState( {
       playerName: event.target.value
+    } )
+  }
+
+  changePhrase= (event) => {
+    this.setState( {
+      phraseFormEntry: event.target.value
     } )
   }
 
@@ -104,6 +124,22 @@ class App extends React.Component {
     await this.createPlayer()
   }
 
+  postPhrase = async () => {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+      body: JSON.stringify({
+        phrase: this.state.phraseFormEntry
+      })
+    })
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { gameDetails: resp } ) )
+    
+  }
+
   createPlayer = async () => {
     await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/player", {
       method: "POST",
@@ -135,6 +171,7 @@ class App extends React.Component {
 
   }
 
+  
   render() {
 
     
@@ -164,20 +201,33 @@ class App extends React.Component {
         </div>
       )
     } else if (this.state.roundStarted === false) {
-      
+      var judge = getJudgeDetails(this.state.gamePlayers, this.state.gameDetails)
       return(
         <div>
           {
-            <h6>Game URL: https://pnadolny13.github.io/gif-judge?id={this.state.gameDetails.id}</h6>
+            <div>
+              <h6>Game URL: https://pnadolny13.github.io/gif-judge?id={this.state.gameDetails.id}</h6>
+              <h6>Game Name: {this.state.gameDetails.name}</h6>
+              <h6>Game Round: {this.state.gameDetails.round_num}</h6>
+              <h6>Game Judge: {judge.name}</h6>
+            </div>
           }
           {
             this.state.gamePlayers.map(function(d, idx){
               return (<li key={idx}>{d.name} - {d.game_score}</li>)
             })
           }
+          {
+            <JudgeForm
+              judgeId={judge.id}
+              playerId={this.state.playerDetails.id}
+              phraseFormEntry={this.state.phraseFormEntry}
+              changePhrase={this.changePhrase}
+              postPhrase={this.postPhrase}
+            />
+          }
         </div>
       )
-    
     }  else {
 
       return (
