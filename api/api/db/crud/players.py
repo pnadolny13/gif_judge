@@ -22,20 +22,15 @@ async def create_player(game: Game, name: str) -> Player:
 async def set_player_game_score(game_id: UUID) -> Player:
     return None
 
-async def read_player(game_id: UUID) -> Player:
-    return Player(
-        id=game_id,
-    )
-
-async def read_game(game_id: str) -> Game:
+async def read_player(player_id: str) -> Player:
     resp = DynamoDB().get_item(
-        "games",
-        {"id": game_id}
+        "players",
+        {"id": player_id}
     )
     if resp:
-        return Game(**resp)
+        return Player(**resp)
     return None
-    
+
 async def read_players(game_id: str) -> List[Player]:
     resp = DynamoDB().get_items(
         "players",

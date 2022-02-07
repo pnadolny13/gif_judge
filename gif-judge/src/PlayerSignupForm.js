@@ -6,7 +6,7 @@ const PlayerSignupForm = ( {playerName, changePlayerName, createPlayer } ) => {
       <input
         className="ui input player name"
         type="text"
-        placeholder="Player Name"
+        placeholder="New Player Name"
         value={playerName}
         onChange={changePlayerName}
       />

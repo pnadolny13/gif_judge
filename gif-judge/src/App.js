@@ -5,6 +5,7 @@ import GifCard from './GifCard';
 import GameLanding from './GameLanding';
 import PlayerSignupForm from './PlayerSignupForm';
 import JudgeForm from './JudgeForm';
+import ExistingPlayerForm from './ExistingPlayerForm'
 
 
 function getJudgeDetails(gamePlayers, gameDetails) {
@@ -17,6 +18,18 @@ function getJudgeDetails(gamePlayers, gameDetails) {
     }
   }
   return judge_player
+}
+
+function getPlayerByName(gamePlayers, name) {
+  // for each if ID = 
+  var named_player = {}
+  for (const player of gamePlayers){
+    if (player.name === name){
+      named_player = player
+      break;
+    }
+  }
+  return named_player
 }
 
 class App extends React.Component {
@@ -38,7 +51,8 @@ class App extends React.Component {
       newGameFlag: "",
       roundStarted: false,
       gamePlayers: [],
-      phraseFormEntry: ""
+      phraseFormEntry: "",
+      existingPlayerName: ""
     }
   }
 
@@ -62,7 +76,7 @@ class App extends React.Component {
 
   changePlayerName= (event) => {
     this.setState( {
-      playerName: event.target.value
+      existingPlayerName: event.target.value
     } )
   }
 
@@ -94,7 +108,7 @@ class App extends React.Component {
   }
 
   getExistingGame = async () => {
-    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameId, {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameId, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +118,7 @@ class App extends React.Component {
       // TODO: error handling
       .then( resp => resp.json() )
       .then( resp => this.setState( { gameDetails: resp } ) )
-
+    await this.getGamePlayers()
   }
 
   getNewGame = async () => {
@@ -158,7 +172,7 @@ class App extends React.Component {
   }
 
   getGamePlayers = async () => {
-    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/players", {
+    await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/players", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -171,6 +185,32 @@ class App extends React.Component {
 
   }
 
+  // TODO: call this from the form and call the static function to iterate the player dict
+  getPlayerByName = async () => {
+    var named_player = {}
+    for (const player of this.state.gamePlayers){
+      if (player.name === this.state.existingPlayerName){
+        named_player = player
+        break;
+      }
+    }
+    this.setState( { playerDetails: named_player } )
+  }
+  
+
+  getExistingPlayers = async () => {
+    fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.state.gameDetails.id + "/players", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }, 
+    })
+      // TODO: error handling
+      .then( resp => resp.json() )
+      .then( resp => this.setState( { gamePlayers: resp } ) )
+
+  }
   
   render() {
 
@@ -192,6 +232,13 @@ class App extends React.Component {
       return (
         <div>
           {
+            <ExistingPlayerForm
+              playerName={this.state.existingPlayerName}
+              changePlayerName={this.changePlayerName}
+              getPlayerByName={this.getPlayerByName}
+            />
+          }
+          {
             <PlayerSignupForm
               playerName={this.state.playerName}
               changePlayerName={this.changePlayerName}
@@ -210,6 +257,7 @@ class App extends React.Component {
               <h6>Game Name: {this.state.gameDetails.name}</h6>
               <h6>Game Round: {this.state.gameDetails.round_num}</h6>
               <h6>Game Judge: {judge.name}</h6>
+              <h6>Your Name: {this.state.playerDetails.name}</h6>
             </div>
           }
           {
