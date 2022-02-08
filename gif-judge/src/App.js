@@ -20,18 +20,6 @@ function getJudgeDetails(gamePlayers, gameDetails) {
   return judge_player
 }
 
-function getPlayerByName(gamePlayers, name) {
-  // for each if ID = 
-  var named_player = {}
-  for (const player of gamePlayers){
-    if (player.name === name){
-      named_player = player
-      break;
-    }
-  }
-  return named_player
-}
-
 class App extends React.Component {
 
   constructor() {
@@ -185,7 +173,6 @@ class App extends React.Component {
 
   }
 
-  // TODO: call this from the form and call the static function to iterate the player dict
   getPlayerByName = async () => {
     var named_player = {}
     for (const player of this.state.gamePlayers){
