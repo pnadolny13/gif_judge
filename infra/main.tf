@@ -186,8 +186,8 @@ resource "aws_lambda_permission" "api_gw" {
 resource "aws_dynamodb_table" "games" {
   name           = "games"
   billing_mode   = "PROVISIONED"
-  read_capacity  = 20
-  write_capacity = 20
+  read_capacity  = 1
+  write_capacity = 1
   hash_key       = "id"
 
   attribute {
@@ -200,8 +200,8 @@ resource "aws_dynamodb_table" "games" {
 resource "aws_dynamodb_table" "players" {
   name           = "players"
   billing_mode   = "PROVISIONED"
-  read_capacity  = 20
-  write_capacity = 20
+  read_capacity  = 1
+  write_capacity = 1
   hash_key       = "id"
 
   attribute {
@@ -214,8 +214,8 @@ resource "aws_dynamodb_table" "players" {
 resource "aws_dynamodb_table" "selections" {
   name           = "selections"
   billing_mode   = "PROVISIONED"
-  read_capacity  = 20
-  write_capacity = 20
+  read_capacity  = 1
+  write_capacity = 1
   hash_key       = "id"
 
   attribute {
