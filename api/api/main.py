@@ -11,6 +11,7 @@ app.include_router(router, prefix="/v1")
 
 origins = [
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://pnadolny13.github.io"
 ]
 
