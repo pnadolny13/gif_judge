@@ -42,3 +42,10 @@ https://tighten.co/blog/react-101-building-a-gif-search-engine/
 
 Consider using this package to install terraform on local stack
 https://github.com/localstack/terraform-local
+
+## Deployment
+
+Theres a GitHub action that does the following:
+- runs Terraform to redeploy the `api` directory code to API gateway and anything else in the `infra` directory (S3 buckets, Dynamo tables, etc.) 
+- builds the react app in `gif-judge` directory and pushes the output artifacts needed to the `gh-pages` branch
+- the repo is configured to re-deploy to GH pages on changes to the `gh-pages` branch
