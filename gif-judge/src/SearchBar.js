@@ -4,7 +4,7 @@ const SearchBar = ( { searchTerm, changeSearchTerm, getGifs } ) => {
   return (
     <div>
       <input 
-        className="ui input search"
+        className="search"
         type="text"
         placeholder="Search powered by Giphy..."
         value={searchTerm}

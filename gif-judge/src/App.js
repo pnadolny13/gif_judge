@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import SearchBar from './SearchBar';
 import GifCard from './GifCard';
+import GifModal from './GifModal';
 
 class App extends React.Component {
 
@@ -10,20 +11,8 @@ class App extends React.Component {
     this.state = {
       searchTerm: "",
       gifs: [],
-      gameDetails: {
-        "id": ""
-      },
-      gameName: "",
-      gameId: "",
-      playerDetails: {
-        "id": ""
-      },
-      playerName: "",
-      newGameFlag: "",
-      roundStarted: false,
-      gamePlayers: [],
-      phraseFormEntry: "",
-      existingPlayerName: ""
+      selectedGif: null,
+      modalIsOpen: false
     }
   }
 
@@ -31,6 +20,20 @@ class App extends React.Component {
     this.setState( {
       searchTerm: event.target.value
     } )
+  }
+
+  openModal(gif) {
+    this.setState({
+        modalIsOpen: true,
+        selectedGif: gif
+    });
+  }
+
+  closeModal() {
+      this.setState({
+          modalIsOpen: false,
+          selectedGif: null
+      });
   }
 
   getGifs = () => {
@@ -61,9 +64,17 @@ class App extends React.Component {
           }
 
           {
-            this.state.gifs.map( gifObj => 
-              <GifCard key={gifObj.id} gifObj={gifObj} /> 
+            this.state.gifs.map( gifObj =>
+              <GifCard key={gifObj.id} gifObj={gifObj} onGifSelect={selectedGif => this.openModal(selectedGif) } /> 
             )
+          }
+
+          {
+            <GifModal
+              modalIsOpen={this.state.modalIsOpen}
+              selectedGif={this.state.selectedGif}
+              onRequestClose={ () => this.closeModal() }
+            />
           }
 
         </div>

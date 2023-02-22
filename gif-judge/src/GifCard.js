@@ -1,10 +1,9 @@
 import React from 'react'
 
-const GifCard = ( { gifObj } ) => {
+const GifCard = ( { gifObj, onGifSelect } ) => {
   return (
-    <div className="ui card" >
-      <img src={gifObj.images.downsized.url} alt="gif"/>
-      {/* onClick={getGifs} */}
+    <div className="gif-item" >
+      <img src={gifObj.images.downsized.url} alt="gif" onClick={() => onGifSelect(gifObj)}/>
 
     </div>
   )
