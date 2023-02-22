@@ -16,8 +16,29 @@ If the changes arent reflected then the job might need to be manually triggered 
 make app_deploy
 ```
 
+## Local
+
+Add these to your .env file:
+
+```bash
+export GIPHY_API_KEY=""
+export AWS_ACCESS=""
+export AWS_SECRET=""
+export REACT_APP_API_URL=http://127.0.0.1:8000/
+```
+
+```
+workon gif_judge
+make api_local
+# Separate terminal
+make app_local
+```
+
 ## References
 
 https://medium.com/@grahamflas/how-to-create-a-simple-gif-searching-app-with-a-react-frontend-and-rails-backend-and-a-backend-13fd77bf152
 
 https://tighten.co/blog/react-101-building-a-gif-search-engine/
+
+Consider using this package to install terraform on local stack
+https://github.com/localstack/terraform-local
