@@ -236,11 +236,16 @@ class App extends React.Component {
       )
     } else if (this.state.roundStarted === false) {
       var judge = getJudgeDetails(this.state.gamePlayers, this.state.gameDetails)
+      var base_url = process.env.REACT_APP_URL
+      if (!process.env.REACT_APP_URL) {
+        base_url = 'https://pnadolny13.github.io'
+      }
+
       return(
         <div>
           {
             <div>
-              <h6>Game URL: https://pnadolny13.github.io/gif-judge?id={this.state.gameDetails.id}</h6>
+              <h6>Game URL: {base_url}/gif-judge?id={this.state.gameDetails.id}</h6>
               <h6>Game Name: {this.state.gameDetails.name}</h6>
               <h6>Game Round: {this.state.gameDetails.round_num}</h6>
               <h6>Game Judge: {judge.name}</h6>
