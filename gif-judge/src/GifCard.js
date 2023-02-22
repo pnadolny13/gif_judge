@@ -3,7 +3,9 @@ import React from 'react'
 const GifCard = ( { gifObj } ) => {
   return (
     <div className="ui card" >
-      <img src={gifObj.images.fixed_height.url} alt="gif"/>
+      <img src={gifObj.images.downsized.url} alt="gif"/>
+      {/* onClick={getGifs} */}
+
     </div>
   )
 }
