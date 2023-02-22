@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 terraform_init:
 	source .env && cd infra && terraform init
 
@@ -9,7 +11,7 @@ terraform_down:
 	cd infra && terraform destroy
 
 api_local:
-	source .env && cd api/api/ && uvicorn main:app --reload
+	. env.sh && cd api/api/ && uvicorn main:app --reload
 
 app_local:
-	source .env && cd gif-judge && npm start
+	. env.sh && cd gif-judge && npm start
