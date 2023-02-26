@@ -4,7 +4,7 @@ import SearchBar from './SearchBar';
 import GifCard from './GifCard';
 import GifModal from './GifModal';
 
-class App extends React.Component {
+class GifLanding extends React.Component {
 
   constructor() {
     super()
@@ -84,4 +84,4 @@ class App extends React.Component {
   }  
 }
 
-export default App
+export default GifLanding
