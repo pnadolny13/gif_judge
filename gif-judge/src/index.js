@@ -4,6 +4,7 @@ import './index.css';
 import {
   createBrowserRouter,
   RouterProvider,
+  Navigate,
 } from "react-router-dom";
 import ErrorPage from "./error-page";
 import GifLanding from "./GifLanding"
@@ -16,8 +17,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/gif-judge",
-    element: <GifLanding />,
-    errorElement: <ErrorPage />,
+    element: <Navigate to="/" />,
   },
 ]);
 
