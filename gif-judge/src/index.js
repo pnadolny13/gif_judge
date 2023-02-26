@@ -4,7 +4,7 @@ import './index.css';
 import {
   createBrowserRouter,
   RouterProvider,
-  Navigate,
+  // Navigate,
 } from "react-router-dom";
 import ErrorPage from "./error-page";
 import GifLanding from "./GifLanding"
