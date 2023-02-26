@@ -10,4 +10,5 @@ infra/terraform.tfstate.backup
 .env
 
 node_modules
+gif-judge/.netlify/*
 gif-judge/build/*
