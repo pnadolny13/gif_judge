@@ -14,6 +14,11 @@ const router = createBrowserRouter([
     element: <GifLanding />,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/gif-judge",
+    element: <GifLanding />,
+    errorElement: <ErrorPage />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
