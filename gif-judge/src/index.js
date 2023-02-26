@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./error-page";
 import GifLanding from "./GifLanding"
+import GameHome from "./GameHome"
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
     path: "/gif-judge",
     element: <GifLanding />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "/gif-judge/:gameId",
+    element: <GameHome />,
   },
 ]);
 
