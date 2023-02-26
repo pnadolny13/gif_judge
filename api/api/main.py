@@ -12,7 +12,8 @@ app.include_router(router, prefix="/v1")
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://pnadolny13.github.io"
+    "https://pnadolny13.github.io",
+    "https://63fbd10bd685f6478e8c370a--gif-judge.netlify.app",
 ]
 
 app.add_middleware(
