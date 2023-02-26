@@ -17,7 +17,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/gif-judge",
-    element: <Navigate to="/" />,
+    element: <GifLanding />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
