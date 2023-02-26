@@ -3,3 +3,4 @@ mangum==0.10.0
 requests>=2.24.0
 uvicorn==0.12.2
 boto3==1.20.24
+websockets==10.4
