@@ -3,6 +3,7 @@ from typing import List
 
 from db.crud.games import read_game
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+import asyncio
 
 router = APIRouter()
 
@@ -16,11 +17,7 @@ class ConnectionManager:
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
+        self.active_connections.remove(websocket)
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:
@@ -50,8 +47,6 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str):
             if count >= timeout:
                 raise WebSocketDisconnect("Timed out.")
             count += 1
-            time.sleep(1)
+            await asyncio.sleep(1)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
-    finally:
         manager.disconnect(websocket)
