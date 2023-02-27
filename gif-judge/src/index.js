@@ -24,6 +24,7 @@ const router = createBrowserRouter([
   {
     path: "/gif-judge/:gameId",
     element: <GameHome />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
