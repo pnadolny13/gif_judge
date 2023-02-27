@@ -13,7 +13,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001",
     "https://pnadolny13.github.io",
-    "https://63fbd10bd685f6478e8c370a--gif-judge.netlify.app",
+    "https://gif-judge.netlify.app",
 ]
 
 app.add_middleware(

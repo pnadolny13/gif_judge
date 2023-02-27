@@ -37,7 +37,7 @@ class GifLanding extends React.Component {
   }
 
   getGifs = () => {
-    fetch(process.env.APP_REST_API_URL + "v1/get_gifs", {
+    fetch(process.env.REACT_APP_REST_API_URL + "v1/get_gifs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
