@@ -15,8 +15,22 @@ class GameHome extends React.Component {
       }
     }
 
+    componentDidMount() {
+      const websocket = new WebSocket('ws://' + process.env.REACT_APP_API_URL + "v1/ws/" + this.props.params.gameId)
+      this.setState({
+        websocket: websocket
+      })
+      websocket.onmessage = this.onMessage
+
+    }
+
+    onMessage = (ev) => {
+      const recv = JSON.parse(ev.data)
+      this.setState( { gameDetails: recv } )
+    }
+
     getExistingGame = async () => {
-        await fetch(process.env.REACT_APP_API_URL + "v1/game/" + this.props.params.gameId, {
+        await fetch("http://" + process.env.REACT_APP_API_URL + "v1/game/" + this.props.params.gameId, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
