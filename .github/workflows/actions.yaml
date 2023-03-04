@@ -36,7 +36,7 @@ jobs:
         python-version: 3.9
 
     - name: Build API
-      run: cd api && python3 -m venv venv && source venv/bin/activate && pip install -r api/requirements.txt && cp -r ./venv/lib/python3.9/site-packages/ ../infra/.temp && cp -r api/* ../infra/.temp
+      run: cd api && python3 -m venv venv && source venv/bin/activate && pip install -r api/requirements.txt && cp -r ./venv/lib/python3.9/site-packages/ ../infra/.temp_rest && cp -r api/* ../infra/.temp_rest
 
     - name: Terraform Validate
       run: cd infra && terraform init

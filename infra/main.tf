@@ -45,7 +45,7 @@ resource "aws_s3_bucket" "lambda_bucket" {
 data "archive_file" "lambda_gif_judge" {
   type = "zip"
 
-  source_dir  = "${path.module}/.temp"
+  source_dir  = "${path.module}/.temp_rest"
   output_path = "${path.module}/gif-judge.zip"
 
 }
