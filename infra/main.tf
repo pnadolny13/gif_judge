@@ -294,7 +294,7 @@ resource "aws_apigatewayv2_integration" "ws_messenger_api_integration" {
   api_id                    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   integration_type          = "AWS_PROXY"
   integration_uri           = aws_lambda_function.lambda_gif_judge_ws.invoke_arn
-  # credentials_arn           = aws_iam_role.lambda_exec.arn
+  credentials_arn           = aws_iam_role.lambda_exec.arn
   content_handling_strategy = "CONVERT_TO_TEXT"
   passthrough_behavior      = "WHEN_NO_MATCH"
 }
