@@ -41,6 +41,7 @@ resource "aws_s3_bucket" "lambda_bucket" {
   force_destroy = true
 }
 
+### REST API Lambda
 
 data "archive_file" "lambda_gif_judge" {
   type = "zip"
@@ -77,7 +78,9 @@ resource "aws_lambda_function" "lambda_gif_judge" {
     variables = {
       AWS_ACCESS = var.aws_access_key,
       AWS_SECRET = var.aws_secret,
-      GIPHY_API_KEY = var.giphy_api_key
+      GIPHY_API_KEY = var.giphy_api_key,
+      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
+      
     }
   }
 }
@@ -87,6 +90,56 @@ resource "aws_cloudwatch_log_group" "gif_judge" {
 
   retention_in_days = 30
 }
+
+### Websocket API Lambda
+
+data "archive_file" "lambda_gif_judge_ws" {
+  type = "zip"
+
+  source_dir  = "${path.module}/.temp_ws"
+  output_path = "${path.module}/gif-judge-ws.zip"
+
+}
+
+resource "aws_s3_bucket_object" "lambda_gif_judge_ws" {
+  bucket = aws_s3_bucket.lambda_bucket.id
+
+  key    = "gif-judge-ws.zip"
+  source = data.archive_file.lambda_gif_judge_ws.output_path
+
+  etag = filemd5(data.archive_file.lambda_gif_judge_ws.output_path)
+
+}
+
+resource "aws_lambda_function" "lambda_gif_judge_ws" {
+  function_name = "GifJudgeWS"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_bucket_object.lambda_gif_judge_ws.key
+
+  runtime = "python3.8"
+  handler = "main.connection_manager"
+
+  source_code_hash = data.archive_file.lambda_gif_judge_ws.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  environment {
+    variables = {
+      AWS_ACCESS = var.aws_access_key,
+      AWS_SECRET = var.aws_secret,
+      GIPHY_API_KEY = var.giphy_api_key
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_group" "gif_judge_ws" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge_ws.function_name}"
+
+  retention_in_days = 30
+}
+
+### IAM Roles
 
 resource "aws_iam_role" "lambda_exec" {
   name = "serverless_lambda"
@@ -109,6 +162,8 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
+### API Gateway (REST)
 
 resource "aws_api_gateway_rest_api" "api_lambda" {
   name        = "gif_judge_api"
@@ -136,9 +191,6 @@ resource "aws_api_gateway_integration" "lambda" {
    type                    = "AWS_PROXY"
    uri                     = aws_lambda_function.lambda_gif_judge.invoke_arn
 }
-
-
-
 
 resource "aws_api_gateway_method" "proxy_root" {
    rest_api_id   = aws_api_gateway_rest_api.api_lambda.id
@@ -182,6 +234,85 @@ resource "aws_lambda_permission" "api_gw" {
 
   source_arn = "${aws_api_gateway_rest_api.api_lambda.execution_arn}/*/*"
 }
+
+### API Gateway (Websocket)
+
+resource "aws_apigatewayv2_api" "ws_messenger_api_gateway" {
+  name                       = "gif-judge-ws-api-gateway"
+  protocol_type              = "WEBSOCKET"
+  route_selection_expression = "$request.body.action"
+}
+
+resource "aws_apigatewayv2_integration" "ws_messenger_api_integration" {
+  api_id                    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_type          = "AWS_PROXY"
+  integration_uri           = aws_lambda_function.lambda_gif_judge_ws.invoke_arn
+  credentials_arn           = aws_iam_role.lambda_exec.arn
+  content_handling_strategy = "CONVERT_TO_TEXT"
+  passthrough_behavior      = "WHEN_NO_MATCH"
+}
+
+resource "aws_apigatewayv2_integration_response" "ws_messenger_api_integration_response" {
+  api_id                   = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_id           = aws_apigatewayv2_integration.ws_messenger_api_integration.id
+  integration_response_key = "/200/"
+}
+
+resource "aws_apigatewayv2_route" "ws_messenger_api_default_route" {
+  api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_key = "$default"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+}
+
+resource "aws_apigatewayv2_route_response" "ws_messenger_api_default_route_response" {
+  api_id             = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_id           = aws_apigatewayv2_route.ws_messenger_api_default_route.id
+  route_response_key = "$default"
+}
+
+resource "aws_apigatewayv2_route" "ws_messenger_api_connect_route" {
+  api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_key = "$connect"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+}
+
+resource "aws_apigatewayv2_route_response" "ws_messenger_api_connect_route_response" {
+  api_id             = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_id           = aws_apigatewayv2_route.ws_messenger_api_connect_route.id
+  route_response_key = "$default"
+}
+
+resource "aws_apigatewayv2_route" "ws_messenger_api_disconnect_route" {
+  api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_key = "$disconnect"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+}
+
+resource "aws_apigatewayv2_route_response" "ws_messenger_api_disconnect_route_response" {
+  api_id             = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_id           = aws_apigatewayv2_route.ws_messenger_api_disconnect_route.id
+  route_response_key = "$default"
+}
+
+resource "aws_apigatewayv2_route" "ws_messenger_api_message_route" {
+  api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_key = "MESSAGE"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+}
+
+resource "aws_apigatewayv2_route_response" "ws_messenger_api_message_route_response" {
+  api_id             = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  route_id           = aws_apigatewayv2_route.ws_messenger_api_message_route.id
+  route_response_key = "$default"
+}
+
+resource "aws_apigatewayv2_stage" "ws_messenger_api_stage" {
+  api_id      = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  name        = "develop"
+  auto_deploy = true
+}
+
+### DynamoDB
 
 resource "aws_dynamodb_table" "games" {
   name           = "games"
