@@ -111,8 +111,8 @@ resource "aws_s3_bucket_object" "lambda_gif_judge_ws" {
 
 }
 
-resource "aws_lambda_function" "lambda_gif_judge_ws" {
-  function_name = "GifJudgeWS"
+resource "aws_lambda_function" "lambda_gif_judge_ws_conn_manager" {
+  function_name = "GifJudgeWSConnManager"
 
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_bucket_object.lambda_gif_judge_ws.key
@@ -133,8 +133,67 @@ resource "aws_lambda_function" "lambda_gif_judge_ws" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "gif_judge_ws" {
-  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge_ws.function_name}"
+
+resource "aws_lambda_function" "lambda_gif_judge_ws_default" {
+  function_name = "GifJudgeWSDefault"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_bucket_object.lambda_gif_judge_ws.key
+
+  runtime = "python3.8"
+  handler = "main.default_message"
+
+  source_code_hash = data.archive_file.lambda_gif_judge_ws.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  environment {
+    variables = {
+      AWS_ACCESS = var.aws_access_key,
+      AWS_SECRET = var.aws_secret,
+      GIPHY_API_KEY = var.giphy_api_key,
+      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
+    }
+  }
+}
+
+resource "aws_lambda_function" "lambda_gif_judge_ws_incoming" {
+  function_name = "GifJudgeWSIncoming"
+
+  s3_bucket = aws_s3_bucket.lambda_bucket.id
+  s3_key    = aws_s3_bucket_object.lambda_gif_judge_ws.key
+
+  runtime = "python3.8"
+  handler = "main.handle_incoming_ws_message"
+
+  source_code_hash = data.archive_file.lambda_gif_judge_ws.output_base64sha256
+
+  role = aws_iam_role.lambda_exec.arn
+
+  environment {
+    variables = {
+      AWS_ACCESS = var.aws_access_key,
+      AWS_SECRET = var.aws_secret,
+      GIPHY_API_KEY = var.giphy_api_key,
+      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_group" "gif_judge_ws_conn_manager" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge_ws_conn_manager.function_name}"
+
+  retention_in_days = 30
+}
+
+resource "aws_cloudwatch_log_group" "gif_judge_ws_incoming" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge_ws_incoming.function_name}"
+
+  retention_in_days = 30
+}
+
+resource "aws_cloudwatch_log_group" "gif_judge_ws_default" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_gif_judge_ws_default.function_name}"
 
   retention_in_days = 30
 }
@@ -290,24 +349,25 @@ resource "aws_apigatewayv2_api" "ws_messenger_api_gateway" {
   route_selection_expression = "$request.body.action"
 }
 
-resource "aws_apigatewayv2_integration" "ws_messenger_api_integration" {
+## Default
+resource "aws_apigatewayv2_integration" "ws_messenger_api_integration_default" {
   api_id                    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   integration_type          = "AWS_PROXY"
-  integration_uri           = aws_lambda_function.lambda_gif_judge_ws.invoke_arn
+  integration_uri           = aws_lambda_function.lambda_gif_judge_ws_default.invoke_arn
   content_handling_strategy = "CONVERT_TO_TEXT"
   passthrough_behavior      = "WHEN_NO_MATCH"
 }
 
-resource "aws_apigatewayv2_integration_response" "ws_messenger_api_integration_response" {
+resource "aws_apigatewayv2_integration_response" "ws_messenger_api_integration_default_response" {
   api_id                   = aws_apigatewayv2_api.ws_messenger_api_gateway.id
-  integration_id           = aws_apigatewayv2_integration.ws_messenger_api_integration.id
+  integration_id           = aws_apigatewayv2_integration.ws_messenger_api_integration_default.id
   integration_response_key = "/200/"
 }
 
 resource "aws_apigatewayv2_route" "ws_messenger_api_default_route" {
   api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   route_key = "$default"
-  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration_default.id}"
 }
 
 resource "aws_apigatewayv2_route_response" "ws_messenger_api_default_route_response" {
@@ -316,10 +376,25 @@ resource "aws_apigatewayv2_route_response" "ws_messenger_api_default_route_respo
   route_response_key = "$default"
 }
 
+## Conn Manager
+resource "aws_apigatewayv2_integration" "ws_messenger_api_integration_conn_manager" {
+  api_id                    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_type          = "AWS_PROXY"
+  integration_uri           = aws_lambda_function.lambda_gif_judge_ws_conn_manager.invoke_arn
+  content_handling_strategy = "CONVERT_TO_TEXT"
+  passthrough_behavior      = "WHEN_NO_MATCH"
+}
+
+resource "aws_apigatewayv2_integration_response" "ws_messenger_api_integration_conn_response" {
+  api_id                   = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_id           = aws_apigatewayv2_integration.ws_messenger_api_integration_conn_manager.id
+  integration_response_key = "/200/"
+}
+
 resource "aws_apigatewayv2_route" "ws_messenger_api_connect_route" {
   api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   route_key = "$connect"
-  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration_conn_manager.id}"
 }
 
 resource "aws_apigatewayv2_route_response" "ws_messenger_api_connect_route_response" {
@@ -328,10 +403,12 @@ resource "aws_apigatewayv2_route_response" "ws_messenger_api_connect_route_respo
   route_response_key = "$default"
 }
 
+## Disconnect
+
 resource "aws_apigatewayv2_route" "ws_messenger_api_disconnect_route" {
   api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   route_key = "$disconnect"
-  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration_conn_manager.id}"
 }
 
 resource "aws_apigatewayv2_route_response" "ws_messenger_api_disconnect_route_response" {
@@ -340,10 +417,26 @@ resource "aws_apigatewayv2_route_response" "ws_messenger_api_disconnect_route_re
   route_response_key = "$default"
 }
 
+## Message
+
+resource "aws_apigatewayv2_integration" "ws_messenger_api_integration_incoming" {
+  api_id                    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_type          = "AWS_PROXY"
+  integration_uri           = aws_lambda_function.lambda_gif_judge_ws_incoming.invoke_arn
+  content_handling_strategy = "CONVERT_TO_TEXT"
+  passthrough_behavior      = "WHEN_NO_MATCH"
+}
+
+resource "aws_apigatewayv2_integration_response" "ws_messenger_api_integration_incoming_response" {
+  api_id                   = aws_apigatewayv2_api.ws_messenger_api_gateway.id
+  integration_id           = aws_apigatewayv2_integration.ws_messenger_api_integration_incoming.id
+  integration_response_key = "/200/"
+}
+
 resource "aws_apigatewayv2_route" "ws_messenger_api_message_route" {
   api_id    = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   route_key = "MESSAGE"
-  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.ws_messenger_api_integration_incoming.id}"
 }
 
 resource "aws_apigatewayv2_route_response" "ws_messenger_api_message_route_response" {
