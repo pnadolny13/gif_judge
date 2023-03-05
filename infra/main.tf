@@ -358,15 +358,32 @@ resource "aws_apigatewayv2_stage" "ws_messenger_api_stage" {
   auto_deploy = true
 }
 
-resource "aws_lambda_permission" "api_gw_ws" {
+resource "aws_lambda_permission" "api_gw_ws_conn" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_gif_judge_ws.function_name
+  function_name = aws_lambda_function.lambda_gif_judge_ws_conn_manager.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.ws_messenger_api_gateway.execution_arn}/*/*"
 }
 
+resource "aws_lambda_permission" "api_gw_ws_default" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_gif_judge_ws_default.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.ws_messenger_api_gateway.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gw_ws_incoming" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_gif_judge_ws_incoming.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.ws_messenger_api_gateway.execution_arn}/*/*"
+}
 ### DynamoDB
 
 resource "aws_dynamodb_table" "games" {
