@@ -16,7 +16,7 @@ class GameHome extends React.Component {
     }
 
     componentDidMount() {
-      const websocket = new WebSocket(process.env.REACT_APP_WS_API_URL + "v1/ws/" + this.props.params.gameId)
+      const websocket = new WebSocket(process.env.REACT_APP_WS_API_URL)
       this.setState({
         websocket: websocket
       })
