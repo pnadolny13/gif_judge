@@ -225,6 +225,30 @@ resource "aws_iam_role" "lambda_exec" {
           Action = "execute-api:*"
           Effect = "Allow"
           Resource = "arn:aws:execute-api:*:*:${aws_apigatewayv2_api.ws_messenger_api_gateway.id}/*/*/*"
+        },
+        {
+          Action = [ "logs:*" ],
+          Effect = "Allow",
+          Resource = [ "arn:aws:logs:*:*:*" ]
+        },
+        {
+          Action = [ "dynamodb:BatchGetItem",
+                      "dynamodb:GetItem",
+                      "dynamodb:GetRecords",
+                      "dynamodb:Scan",
+                      "dynamodb:Query",
+                      "dynamodb:GetShardIterator",
+                      "dynamodb:DescribeStream",
+                      "dynamodb:ListStreams" ],
+          Effect = "Allow",
+          Resource = [
+            "${aws_dynamodb_table.games.arn}",
+            "${aws_dynamodb_table.games.arn}/*",
+            "${aws_dynamodb_table.players.arn}",
+            "${aws_dynamodb_table.players.arn}/*",
+            "${aws_dynamodb_table.selections.arn}",
+            "${aws_dynamodb_table.selections.arn}/*"
+          ]
         }
       ]
     })
@@ -463,6 +487,10 @@ resource "aws_apigatewayv2_stage" "ws_messenger_api_stage" {
   api_id      = aws_apigatewayv2_api.ws_messenger_api_gateway.id
   name        = "develop"
   auto_deploy = true
+  default_route_settings {
+    throttling_burst_limit = 50
+    throttling_rate_limit = 100
+  }
 }
 
 resource "aws_lambda_permission" "api_gw_ws_conn" {
@@ -499,6 +527,8 @@ resource "aws_dynamodb_table" "games" {
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "id"
+  stream_enabled = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
 
   attribute {
     name = "id"
@@ -533,4 +563,24 @@ resource "aws_dynamodb_table" "selections" {
     type = "S"
   }
 
+}
+
+resource "aws_dynamodb_table" "connections" {
+  name           = "connections"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+}
+
+resource "aws_lambda_event_source_mapping" "game_trigger" {
+  event_source_arn  = aws_dynamodb_table.games.stream_arn
+  function_name     = aws_lambda_function.lambda_gif_judge_ws_incoming.arn
+  starting_position = "LATEST"
 }
