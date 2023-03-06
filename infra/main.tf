@@ -79,8 +79,7 @@ resource "aws_lambda_function" "lambda_gif_judge" {
       AWS_ACCESS = var.aws_access_key,
       AWS_SECRET = var.aws_secret,
       GIPHY_API_KEY = var.giphy_api_key,
-      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
-      
+      WEBSOCKET_API_ENDPOINT = "https://${aws_apigatewayv2_api.ws_messenger_api_gateway.id}.execute-api.us-east-1.amazonaws.com/${aws_apigatewayv2_stage.ws_messenger_api_stage.id}"
     }
   }
 }
@@ -152,7 +151,7 @@ resource "aws_lambda_function" "lambda_gif_judge_ws_default" {
       AWS_ACCESS = var.aws_access_key,
       AWS_SECRET = var.aws_secret,
       GIPHY_API_KEY = var.giphy_api_key,
-      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
+      WEBSOCKET_API_ENDPOINT = "https://${aws_apigatewayv2_api.ws_messenger_api_gateway.id}.execute-api.us-east-1.amazonaws.com/${aws_apigatewayv2_stage.ws_messenger_api_stage.id}"
     }
   }
 }
@@ -175,7 +174,7 @@ resource "aws_lambda_function" "lambda_gif_judge_ws_incoming" {
       AWS_ACCESS = var.aws_access_key,
       AWS_SECRET = var.aws_secret,
       GIPHY_API_KEY = var.giphy_api_key,
-      WEBSOCKET_API_ENDPOINT = aws_apigatewayv2_api.ws_messenger_api_gateway.api_endpoint
+      WEBSOCKET_API_ENDPOINT = "https://${aws_apigatewayv2_api.ws_messenger_api_gateway.id}.execute-api.us-east-1.amazonaws.com/${aws_apigatewayv2_stage.ws_messenger_api_stage.id}"
     }
   }
 }
@@ -215,6 +214,21 @@ resource "aws_iam_role" "lambda_exec" {
       }
     ]
   })
+
+  inline_policy {
+    name = "my_inline_policy"
+
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = "execute-api:*"
+          Effect = "Allow"
+          Resource = "arn:aws:execute-api:*:*:${aws_apigatewayv2_api.ws_messenger_api_gateway.id}/*/*/*"
+        }
+      ]
+    })
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
