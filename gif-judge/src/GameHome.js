@@ -75,7 +75,7 @@ class GameHome extends React.Component {
         return (
           <div>
             Game Details: {JSON.stringify(this.state.gameDetails)}
-            { this.state.gameDetails.judge_player_id == this.state.playerId ?
+            { this.state.gameDetails.judge_player_id === this.state.playerId ?
                 <PhraseForm
                   phraseInput={this.state.phraseInput}
                   changePhrase={this.changePhrase}
