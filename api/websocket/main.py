@@ -70,7 +70,7 @@ def default_message(event, context):
 def _flatten(dict_obj):
     new_obj = {}
     for key, value in dict_obj.items():
-        new_obj[key] = value.get(value.keys()[0])
+        new_obj[key] = value.get(list(value.keys())[0])
     return new_obj
 
 def send_ws_message(connection_id, body):
