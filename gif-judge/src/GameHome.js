@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import { useParams } from 'react-router-dom';
+import PhraseForm from './PhraseForm';
+
 
 function withParams(Component) {
     return props => <Component {...props} params={useParams()} />;
@@ -12,6 +14,8 @@ class GameHome extends React.Component {
       super()
       this.state = {
         gameDetails: {},
+        phraseInput: '',
+        playerId: '22bd4b21-ffb9-4247-a678-83ba0beed02c',
       }
     }
 
@@ -27,6 +31,29 @@ class GameHome extends React.Component {
     onMessage = (ev) => {
       const recv = JSON.parse(ev.data)
       this.setState( { gameDetails: recv } )
+    }
+
+    changePhrase = (event) => {
+      this.setState( {
+        phraseInput: event.target.value
+      } )
+    }
+
+    submitPhrase = () => {
+      fetch(process.env.REACT_APP_REST_API_URL + "v1/game/" + this.state.gameDetails.id, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }, 
+        body: JSON.stringify({
+          phrase: this.state.phraseInput
+        })
+      })
+        .then( resp => resp.json() )
+        this.setState({
+          phraseInput: ''
+        })
     }
 
     getExistingGame = async () => {
@@ -46,7 +73,18 @@ class GameHome extends React.Component {
             this.getExistingGame()
         }
         return (
-          <div>Game Details: {JSON.stringify(this.state.gameDetails)}</div>
+          <div>
+            Game Details: {JSON.stringify(this.state.gameDetails)}
+            { this.state.gameDetails.judge_player_id == this.state.playerId ?
+                <PhraseForm
+                  phraseInput={this.state.phraseInput}
+                  changePhrase={this.changePhrase}
+                  submitPhrase={this.submitPhrase}
+                />
+                : null
+            }
+          </div>
+
         )
     }
     
