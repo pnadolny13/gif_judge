@@ -74,11 +74,10 @@ def _flatten(dict_obj):
     return new_obj
 
 def send_ws_message(connection_id, body):
-    if not isinstance(body, str):
-        body = json.dumps(body)
-        # TODO: also pass through pydantic model
-        body = _flatten(body)
-    _send_to_connection(connection_id, body)
+    # TODO: also pass through pydantic model
+    flat_body = _flatten(body)
+    body_str = json.dumps(flat_body)
+    _send_to_connection(connection_id, body_str)
 
 def _get_event_body(event):
     try:
