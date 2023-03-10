@@ -67,9 +67,17 @@ def default_message(event, context):
     send_ws_message(connection_id, {'type':'invalidRequest', 'error':'Unrecognized WebSocket action received.'})
     return REQUEST_HANDLED
 
+def _flatten(dict_obj):
+    new_obj = {}
+    for key, value in dict_obj.items():
+        new_obj[key] = value.get(value.keys()[0])
+    return new_obj
+
 def send_ws_message(connection_id, body):
     if not isinstance(body, str):
         body = json.dumps(body)
+        # TODO: also pass through pydantic model
+        body = _flatten(body)
     _send_to_connection(connection_id, body)
 
 def _get_event_body(event):
