@@ -33,8 +33,8 @@ async def set_game_phrase(game_id: str, phrase: str) -> Game:
         "set phrase=:p, round_start_ts=:s, round_end_ts=:e",
         {
             ":p": phrase,
-            ":s": start.isoformat(),
-            ":e": end.isoformat(),
+            ":s": str(start.isoformat()) + 'Z',
+            ":e": str(end.isoformat()) + 'Z',
         }
     )
     if resp:
