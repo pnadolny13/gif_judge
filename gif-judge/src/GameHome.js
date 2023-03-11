@@ -2,11 +2,14 @@ import React from 'react';
 import './App.css';
 import { useParams } from 'react-router-dom';
 import PhraseForm from './PhraseForm';
+import Countdown from 'react-countdown';
 
 
 function withParams(Component) {
     return props => <Component {...props} params={useParams()} />;
   }
+
+const Completionist = () => <span>Redirecting to gif page!</span>;
 
 class GameHome extends React.Component {
 
@@ -82,6 +85,12 @@ class GameHome extends React.Component {
                   submitPhrase={this.submitPhrase}
                 />
                 : null
+            }
+            { this.state.gameDetails.round_start_ts ?
+              <Countdown date={this.state.gameDetails.round_start_ts}>
+                <Completionist />
+              </Countdown>
+              : null
             }
           </div>
 
