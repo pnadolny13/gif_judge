@@ -13,6 +13,7 @@ def put_connection(connection_id):
     print("Connection saved to Dynamodb")
 
 def delete_connection(connection_id):
+    print(f"Attempting to delete connection_id: {connection_id}")
     DynamoDB().delete_item(
         "connections",
         {"id": connection_id}
@@ -94,6 +95,7 @@ def _send_to_connection(connection_id, data):
     try:
         return gatewayapi.post_to_connection(ConnectionId=connection_id,
                                             Data=data.encode('utf-8'))
-    except gatewayapi.meta.client.exceptions.GoneException as e:
+    except gatewayapi.exceptions.GoneException as e:
         print(f"Connection {connection_id} Not Found: {e}")
-        delete_connection(connection_id)
+        # TODO: this times out
+        # delete_connection(connection_id)
