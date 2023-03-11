@@ -11,8 +11,8 @@ class Game(BaseModel):
     round_num: Optional[int] = 0
     judge_player_id: Optional[str] = None
     phrase: Optional[str] = None
-    round_start_ts: Optional[datetime] = None
-    round_end_ts: Optional[datetime] = None
+    round_start_ts: Optional[str] = None
+    round_end_ts: Optional[str] = None
 
 
 class Player(BaseModel):
