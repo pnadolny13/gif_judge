@@ -88,9 +88,12 @@ def _get_event_body(event):
 
 def _send_to_connection(connection_id, data):
     endpoint = os.environ['WEBSOCKET_API_ENDPOINT']
-    # TODO: try and skip if gone by time of attempt
     print(f"Posting message: {str(data)}")
     gatewayapi = boto3.client("apigatewaymanagementapi",
-                              endpoint_url=endpoint)
-    return gatewayapi.post_to_connection(ConnectionId=connection_id,
-                                         Data=data.encode('utf-8'))
+                                endpoint_url=endpoint)
+    try:
+        return gatewayapi.post_to_connection(ConnectionId=connection_id,
+                                            Data=data.encode('utf-8'))
+    except gatewayapi.meta.client.exceptions.GoneException as e:
+        print(f"Connection {connection_id} Not Found: {e}")
+        delete_connection(connection_id)
