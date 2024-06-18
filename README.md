@@ -50,3 +50,8 @@ https://github.com/localstack/terraform-local
 Theres a GitHub action that does the following:
 - runs Terraform to redeploy the `api` directory code to API gateway and anything else in the `infra` directory (S3 buckets, Dynamo tables, etc.)
 - The front end is hosted by Netlify https://gif-judge.netlify.app/
+
+### Infrastructure model
+![Infrastructure main model](.infragenie/infrastructure_main_model.svg)
+
+---
